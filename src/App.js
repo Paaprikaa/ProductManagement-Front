@@ -1,24 +1,58 @@
+import _ from "lodash";
+import { useState } from "react";
 import "./App.css";
+import setDefaultInventory from "./utils/aux";
 import { PRODUCTS } from "./utils/constants";
 
 function App() {
+  const [inventory, setInventory] = useState(setDefaultInventory());
+
+  const addProduct = (product) => (e) => {
+    const copy = _.cloneDeep(inventory);
+    copy[product] = copy[product] + 1;
+    setInventory(copy);
+  };
+
+  const removeProduct = (product) => (e) => {
+    const copy = _.cloneDeep(inventory);
+    copy[product] = 0;
+    setInventory(copy);
+  };
+
   return (
     <div className="main-container">
       <table>
-        <tr>
-          <th>CANTIDAD</th>
-          <th>DESCRIPCIÓN</th>
-          <th>SUBTOTAL</th>
-          <th>TOTAL</th>
-          <th></th>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Fernet</td>
-          <td>150</td>
-          <td>300</td>
-          <td>quitar</td>
-        </tr>
+        <thead>
+          <tr>
+            <th>CANTIDAD</th>
+            <th>DESCRIPCIÓN</th>
+            <th>SUBTOTAL</th>
+            <th>TOTAL</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(inventory).map((product) => {
+            const productDetails = PRODUCTS[product[0]];
+            if (product[1] != 0) {
+              return (
+                <tr key={`inventory-${product[0]}`}>
+                  <td>{product[1]}</td>
+                  <td>{productDetails[1]}</td>
+                  <td>{productDetails[0]}</td>
+                  <td>{productDetails[0] * product[1]}</td>
+                  <td>
+                    <input
+                      type="button"
+                      value="quitar"
+                      onClick={removeProduct(product[0])}
+                    />
+                  </td>
+                </tr>
+              );
+            }
+          })}
+        </tbody>
       </table>
       <div className="app-bottom-row">
         <div className="select-new-product">
@@ -29,6 +63,8 @@ function App() {
                 <input
                   type="button"
                   value={`${product[1][1]}: $${product[1][0]}`}
+                  onClick={addProduct(product[0])}
+                  key={product[0]}
                 />
               );
             })}
