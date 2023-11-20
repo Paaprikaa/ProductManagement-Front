@@ -19,6 +19,14 @@ function App() {
 
   const removeProduct = (product) => (e) => {
     const copy = _.cloneDeep(inventory);
+    copy[product] = copy[product] - 1;
+    setInventory(copy);
+    setTotalQuantity(getTotals(copy)[0]);
+    setTotalPrice(getTotals(copy)[1]);
+  };
+
+  const deleteProduct = (product) => (e) => {
+    const copy = _.cloneDeep(inventory);
     copy[product] = 0;
     setInventory(copy);
     setTotalQuantity(getTotals(copy)[0]);
@@ -54,16 +62,20 @@ function App() {
               if (product[1] !== 0) {
                 return (
                   <tr key={`inventory-${product[0]}`}>
-                    <td>{product[1]}</td>
+                    <td className="product-row">
+                      <button type="button" onClick={removeProduct(product[0])}>
+                        <span class="material-symbols-outlined">remove</span>
+                      </button>
+                      {product[1]}
+                      <button type="button" onClick={addProduct(product[0])}>
+                        <span class="material-symbols-outlined">add</span>
+                      </button>
+                    </td>
                     <td>{productDetails[1]}</td>
                     <td>{productDetails[0]}</td>
                     <td>{productDetails[0] * product[1]}</td>
                     <td>
-                      <button
-                        type="button"
-                        value="quitar"
-                        onClick={removeProduct(product[0])}
-                      >
+                      <button type="button" onClick={deleteProduct(product[0])}>
                         <i className="material-icons">delete</i>
                       </button>
                     </td>
